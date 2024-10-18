@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <style>
+        body {
+            background-color:crimson;
+            background-image: url('https://i.pinimg.com/736x/9a/97/19/9a971933223000ca54d1b5e304714610.jpg');
+            background-repeat: no-repeat;
+            background-position: right top;
+            margin-right: 200px;
+            background-attachment: scroll;
+            text-align: center;
+        }
+
+        .container {
+            text-align: center;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+</head>
+<body>
+    <h1 align="center" style="color:violet; font-size: 80px;">To-Do List</h1>
+    <div class ="container"> 
+    <input type="text" id="taskInput"  placeholder="Enter your task"> 
+    <button onclick="addTask()" >Add Task</button>
+    <button onclick="undoTask()">Undo</button>
+ </div> 
+
+    <ul id="taskList"> </ul>
+    <script>
+        
+        //Task object constructor
+        function Task(name) {
+            this.name = name;
+            this.dateAdded = new Date().toLocaleString();
+        }
+
+        //Task manager object
+        const taskManager = {
+             tasks: [],
+             deletedTasks: [],
+             
+            //Type new task to add
+            addTask(taskName) {
+                const newTask = new Task(taskName);
+                this.tasks.push(newTask);
+                this.displayTasks();
+            },
+
+            //Delete a task
+            deleteTask(index) {
+                const deletedTask = this.tasks.splice(index, 1) [0];   
+                this.deletedTasks.push(deletedTask); 
+                this.displayTasks();
+            },
+
+            //Undo if task added has been deleted
+            undoTask() {
+                if (this.deletedTasks.length > 0) {
+                    this.tasks.push(...this.deletedTasks);
+                    this.deletedTasks = [];
+                    this.displayTasks();
+                } else {
+                    const x = ("Error to undo tasks!");
+                    alert(x);
+                }
+            
+            },
+
+
+            //Display the new task added
+            displayTasks() {
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = '';
+                this.tasks.forEach((task, index) => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `${task.name} - Added on: ${task.dateAdded} 
+                    <button onclick="deleteTask(${index})">Delete</button>
+                    <button onclick="editTask(${index})">Edit</button>`;
+                    taskList.appendChild(listItem);
+                });
+            }
+        }
+        
+
+
+        //Function to handle adding a task
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskName = taskInput.value;
+            if (taskName.trim()) {
+                taskManager.addTask(taskName);
+                taskInput.value = ''; 
+            } else {
+                alert("Please enter a valid task.");
+            }
+        }
+
+        //Function to delete tasks
+        function deleteTask(index) {
+            taskManager.deleteTask(index);
+        }
+
+        //Function undo all deleted task
+        function undoTask() {
+            taskManager.undoTask();
+        }
+
+        //Function to handle editing the added task
+        function editTask(index){
+            const currentTask = taskManager.tasks[index];
+            const replaceTask =prompt("Type new task:", currentTask.name);
+
+            if (replaceTask && replaceTask.trim()) {
+                currentTask.name = replaceTask.trim();
+                taskManager.displayTasks();
+            } else {
+                alert("Enter a valid task name");
+            }
+
+        }
+    </script>
+</body>
+</html>
